@@ -4,16 +4,23 @@ from pathlib import Path
 def comments_write(name, MetaList):
     """Function to write in an independent file the comment strings"""
 
-    Path(name).parent.mkdir(parents=True, exist_ok=True)
-    with open(file=name + "_comments.txt", mode="w", encoding="utf-8") as outfile:
+    # Create the comments_files directory
+    comments_dir = Path(name).parent / 'comments_files'
+    comments_dir.mkdir(parents=True, exist_ok=True)
+
+    comments_file = comments_dir / (Path(name).stem + "_comments.txt")
+    with open(file=str(comments_file), mode="w", encoding="utf-8") as outfile:
         for m in MetaList:
             outfile.write(m.Comments + "\n")
 
 
 def summary_write(name, MetaList):
+    # Create the summary_files directory
+    summary_dir = Path(name).parent / 'summary_files'
+    summary_dir.mkdir(parents=True, exist_ok=True)
 
-    Path(name).parent.mkdir(parents=True, exist_ok=True)
-    with open(file=name + "_summary.txt", mode="w", encoding="utf-8") as outfile:
+    summary_file = summary_dir / (Path(name).stem + "_summary.txt")
+    with open(file=str(summary_file), mode="w", encoding="utf-8") as outfile:
         header = f"  Cell Id{'':5s}Mat Id{'':6s}Density{'':7s}Volume{'':5s}Comments\n"
         outfile.write(header)
 

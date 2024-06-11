@@ -3,6 +3,7 @@ from .mcnp_format import McnpInput
 from .openmc_format import OpenmcInput
 from .phits_format import PhitsInput
 from .serpent_format import SerpentInput
+import os
 
 
 def write_geometry(
@@ -38,7 +39,9 @@ def write_geometry(
         OutFiles.summary_write(geometryName, MetaList)
 
     if "mcnp" in outFormat:
-        mcnpFilename = geometryName + ".mcnp"
+        mcnpDir = os.path.join(os.getcwd(), 'mcnp')
+        os.makedirs(mcnpDir, exist_ok=True)
+        mcnpFilename = os.path.join(mcnpDir, geometryName + ".mcnp")
         outBox = (
             UniverseBox.XMin,
             UniverseBox.XMax,
@@ -72,15 +75,18 @@ def write_geometry(
         OMCFile = OpenmcInput(MetaList, Surfaces, options, tolerances, numeric_format)
 
     if "openmc_xml" in outFormat:
-        omcFilename = geometryName + ".xml"
+        openmcDir = os.path.join(os.getcwd(), 'openmc_xml')
+        os.makedirs(openmcDir, exist_ok=True)
+        omcFilename = os.path.join(openmcDir, geometryName + ".xml")
         OMCFile.write_xml(omcFilename)
 
     if "openmc_py" in outFormat:
-        omcFilename = geometryName + ".py"
+        openmcDir = os.path.join(os.getcwd(), 'openmc_py')
+        os.makedirs(openmcDir, exist_ok=True)
+        omcFilename = os.path.join(openmcDir, geometryName + ".py")
         OMCFile.write_py(omcFilename)
 
     if "serpent" in outFormat:
-        serpentFilename = geometryName + ".serp"
         outBox = (
             UniverseBox.XMin,
             UniverseBox.XMax,
@@ -108,10 +114,12 @@ def write_geometry(
             step_filename,
         )
         # Serpentfile.set_sdef((outSphere,outBox))
+        serpentDir = os.path.join(os.getcwd(), 'serpent')
+        os.makedirs(serpentDir, exist_ok=True)
+        serpentFilename = os.path.join(serpentDir, geometryName + ".serp")
         Serpentfile.write_input(serpentFilename)
 
     if "phits" in outFormat:
-        phitsFilename = geometryName + ".inp"
         PHITS_outBox = (
             UniverseBox.XMin,
             UniverseBox.XMax,
@@ -145,4 +153,7 @@ def write_geometry(
             startCell=settings.startCell,
         )
         # PHITSfile.setSDEF_PHITS((PHITS_outSphere,PHITS_outBox))
+        phitsDir = os.path.join(os.getcwd(), 'phits')
+        os.makedirs(phitsDir, exist_ok=True)
+        phitsFilename = os.path.join(phitsDir, geometryName + ".phits")
         PHITSfile.write_phits(phitsFilename)
