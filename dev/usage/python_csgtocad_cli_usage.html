@@ -6,8 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview: module code &#8212; GEOUNED 0.1.dev1+g3353fd3 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Command Line Tool Usage, CSG to CAD conversion &#8212; GEOUNED 0.1.dev1+g3353fd3 documentation</title>
   
   
   
@@ -37,7 +38,7 @@
     <script src="../_static/documentation_options.js?v=940dee79"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/python_csgtocad_cli_usage';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/GEOUNED-org/GEOUNED/dev/docs/version_switcher.json';
@@ -46,6 +47,8 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python API reference" href="../python_api.html" />
+    <link rel="prev" title="3. Python Package Usage, CSG to CAD conversion" href="python_csgtocad_api_usage.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -165,8 +168,8 @@ document.write(`
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
-  <a class="nav-link nav-internal" href="../usage/index.html">
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
     Usage
   </a>
 </li>
@@ -263,6 +266,10 @@ document.write(`
   
 
   
+    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -273,9 +280,7 @@ document.write(`
       
       
       
-        
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -297,8 +302,8 @@ document.write(`
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
-  <a class="nav-link nav-internal" href="../usage/index.html">
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
     Usage
   </a>
 </li>
@@ -366,6 +371,21 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="python_cadtocsg_api_usage.html">1. Python Package Usage, CAD to CSG conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_cadtocsg_cli_usage.html">2. Command Line Tool Usage, CAD to CSG conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_csgtocad_api_usage.html">3. Python Package Usage, CSG to CAD conversion</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">4. Command Line Tool Usage, CSG to CAD conversion</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -398,7 +418,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Overview:...</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Usage</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
   </ul>
 </nav>
 </div>
@@ -415,11 +438,64 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="geouned/GEOReverse/core.html">geouned.GEOReverse.core</a></li>
-<li><a href="geouned/GEOUNED/core.html">geouned.GEOUNED.core</a></li>
-<li><a href="geouned/GEOUNED/utils/data_classes.html">geouned.GEOUNED.utils.data_classes</a></li>
-</ul>
+  <section id="command-line-tool-usage-csg-to-cad-conversion">
+<h1><span class="section-number">4. </span>Command Line Tool Usage, CSG to CAD conversion<a class="headerlink" href="#command-line-tool-usage-csg-to-cad-conversion" title="Link to this heading">#</a></h1>
+<p>GEOUNED CSG to CAD conversion can be performed in the command line.</p>
+<p>Both OpenMC XML CSG and MCNP CSG formats are supported.</p>
+<p>The first example assumes you have an OpenMC XML CSG file in the current working directory of the terminal called “cylinder_box.xml”.</p>
+<p>The most minimal use case below shows a minimal config_openmc.json file being used.</p>
+<p>First create a JSON file called “config_openmc.json” containing the following.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;export_cad&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;input_filename&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cylinder_box.xml&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;csg_format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openmc_xml&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then execute the command line interface tool to convert your OpenMC XML CSG file to a STEP CAD file with the default configuration.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geouned_csgtocad<span class="w"> </span>-i<span class="w"> </span>config_openmc.json
+</pre></div>
+</div>
+<p>MCNP CSG files can also be converted, this example assumes you have a MCNP CSG file in te current working directory called “cylinder_box.mcnp”.</p>
+<p>For MCNP CSG files, the JSON config file should be as follows and is assumed to be named “config_mcnp.json”.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;export_cad&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;input_filename&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cylinder_box.mcnp&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;csg_format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mcnp&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then execute the command line interface tool to convert your MCNP CSG file to a STEP CAD file with the default configuration.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geouned_csgtocad<span class="w"> </span>-i<span class="w"> </span>config_mcnp.json
+</pre></div>
+</div>
+<p>The following example shows a usage with every attributes specified in the config.json file.</p>
+<p>The contents of the JSON file closely matches the Class arguments and method arguments when using the Python package.</p>
+<p>For a full description of each keyword see the <a class="reference external" href="../python_api.html">Python API reference section</a> of the documentation.</p>
+<p>Here is a complete JSON file specification</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;export_cad&quot;</span><span class="p">:{</span>
+<span class="w">    </span><span class="nt">&quot;input_filename&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tests/csg_files/cylinder_box.xml&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;csg_format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openmc_xml&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;output_filename&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cad_from_csg&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;bounding_box&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">-1000</span><span class="p">,</span><span class="w"> </span><span class="mi">-1000</span><span class="p">,</span><span class="w"> </span><span class="mi">-1000</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;universe_start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;level_max&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cell_range_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cell_range&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;mat_range_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;mat_range&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geouned_csgtocad<span class="w"> </span>-i<span class="w"> </span>config.json
+</pre></div>
+</div>
+</section>
+
 
                 </article>
               
@@ -430,12 +506,44 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="python_csgtocad_api_usage.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Python Package Usage, CSG to CAD conversion</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../python_api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Python API reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/usage/python_csgtocad_cli_usage.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
               
             
           </div>

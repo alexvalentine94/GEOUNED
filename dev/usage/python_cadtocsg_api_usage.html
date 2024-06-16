@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Usage &#8212; GEOUNED 0.1.dev1+g3353fd3 documentation</title>
+    <title>1. Python Package Usage, CAD to CSG conversion &#8212; GEOUNED 0.1.dev1+g3353fd3 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
     <script src="../_static/documentation_options.js?v=940dee79"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/python_cadtocsg_api_usage';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/GEOUNED-org/GEOUNED/dev/docs/version_switcher.json';
@@ -47,8 +47,8 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Python Package Usage, CAD to CSG conversion" href="python_cadtocsg_api_usage.html" />
-    <link rel="prev" title="2. Windows" href="../install/install_windows.html" />
+    <link rel="next" title="2. Command Line Tool Usage, CAD to CSG conversion" href="python_cadtocsg_cli_usage.html" />
+    <link rel="prev" title="Usage" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -169,7 +169,7 @@ document.write(`
 
 
 <li class="nav-item pst-header-nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+  <a class="nav-link nav-internal" href="index.html">
     Usage
   </a>
 </li>
@@ -303,7 +303,7 @@ document.write(`
 
 
 <li class="nav-item pst-header-nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+  <a class="nav-link nav-internal" href="index.html">
     Usage
   </a>
 </li>
@@ -376,8 +376,8 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="python_cadtocsg_api_usage.html">1. Python Package Usage, CAD to CSG conversion</a></li>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">1. Python Package Usage, CAD to CSG conversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_cadtocsg_cli_usage.html">2. Command Line Tool Usage, CAD to CSG conversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_csgtocad_api_usage.html">3. Python Package Usage, CSG to CAD conversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_csgtocad_cli_usage.html">4. Command Line Tool Usage, CSG to CAD conversion</a></li>
@@ -418,7 +418,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Usage</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Usage</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
   </ul>
 </nav>
 </div>
@@ -435,16 +438,131 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h1>
-<p>GEOUNED can be used as a Python package with the API or as a command line tool with the CLI.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="python_cadtocsg_api_usage.html">1. Python Package Usage, CAD to CSG conversion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="python_cadtocsg_cli_usage.html">2. Command Line Tool Usage, CAD to CSG conversion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="python_csgtocad_api_usage.html">3. Python Package Usage, CSG to CAD conversion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="python_csgtocad_cli_usage.html">4. Command Line Tool Usage, CSG to CAD conversion</a></li>
-</ul>
+  <section id="python-package-usage-cad-to-csg-conversion">
+<h1><span class="section-number">1. </span>Python Package Usage, CAD to CSG conversion<a class="headerlink" href="#python-package-usage-cad-to-csg-conversion" title="Link to this heading">#</a></h1>
+<p>The main class is <code class="docutils literal notranslate"><span class="pre">CadToCsg()</span></code> which converts CAD geometry to Constructive Solid Geometry (CSG).
+There are many arguments that can be passed into the <code class="docutils literal notranslate"><span class="pre">CadToCsg()</span></code> class which are documented in the <a class="reference external" href="../python_api.html">Python API reference section</a> of the documentation.</p>
+<p>If you have install GEOUNED and FreeCAD into your system Python then you can simply run a .py script with Python.
+The most minimal use case below shows GEOUNED being imported and the CadToCsg being used to convert a STEP CAD file called ‘cuboid.stp’ into a vanity of CSG format.
+The example makes use of default  attributes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geouned</span>
+<span class="n">geo</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">CadToCsg</span><span class="p">()</span>
+<span class="n">geo</span><span class="o">.</span><span class="n">load_step_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;cuboid.stp&#39;</span><span class="p">)</span>
+<span class="n">geo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">geo</span><span class="o">.</span><span class="n">export_csg</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Users can change <a class="reference internal" href="../python_api.html#geouned.Options" title="geouned.Options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">geouned.Options()</span></code></a>, <a class="reference internal" href="../python_api.html#geouned.Settings" title="geouned.Settings"><code class="xref py py-meth docutils literal notranslate"><span class="pre">geouned.Settings()</span></code></a>, <a class="reference internal" href="../python_api.html#geouned.Tolerances" title="geouned.Tolerances"><code class="xref py py-meth docutils literal notranslate"><span class="pre">geouned.Tolerances()</span></code></a> and <a class="reference internal" href="../python_api.html#geouned.NumericFormat" title="geouned.NumericFormat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">geouned.NumericFormat()</span></code></a> to suit the conversion desired.
+The following example shows a usage with every attributes specified.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geouned</span>
+
+<span class="n">my_options</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">Options</span><span class="p">(</span>
+    <span class="n">forceCylinder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">newSplitPlane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">delLastNumber</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">enlargeBox</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">nPlaneReverse</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">splitTolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">scaleUp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">quadricPY</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">Facets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">prnt3PPlane</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">forceNoOverlap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">my_settings</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">Settings</span><span class="p">(</span>
+    <span class="n">matFile</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">voidGen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">compSolids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">simplify</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="n">exportSolids</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">minVoidSize</span><span class="o">=</span><span class="mf">200.0</span><span class="p">,</span>
+    <span class="n">maxSurf</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">maxBracket</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">voidMat</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">voidExclude</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">startCell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">startSurf</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">sort_enclosure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">my_tolerances</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">Tolerances</span><span class="p">(</span>
+    <span class="n">relativeTol</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">relativePrecision</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span>
+    <span class="n">distance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">angle</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">pln_distance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">pln_angle</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">cyl_distance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">cyl_angle</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">sph_distance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">kne_distance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">kne_angle</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">tor_distance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">tor_angle</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+    <span class="n">min_area</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">my_numeric_format</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">NumericFormat</span><span class="p">(</span>
+    <span class="n">P_abc</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">P_d</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">P_xyz</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">S_r</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">S_xyz</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">C_r</span><span class="o">=</span><span class="s2">&quot;12f&quot;</span><span class="p">,</span>
+    <span class="n">C_xyz</span><span class="o">=</span><span class="s2">&quot;12f&quot;</span><span class="p">,</span>
+    <span class="n">K_xyz</span><span class="o">=</span><span class="s2">&quot;13.6e&quot;</span><span class="p">,</span>
+    <span class="n">K_tan2</span><span class="o">=</span><span class="s2">&quot;12f&quot;</span><span class="p">,</span>
+    <span class="n">T_r</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">T_xyz</span><span class="o">=</span><span class="s2">&quot;14.7e&quot;</span><span class="p">,</span>
+    <span class="n">GQ_1to6</span><span class="o">=</span><span class="s2">&quot;18.15f&quot;</span><span class="p">,</span>
+    <span class="n">GQ_7to9</span><span class="o">=</span><span class="s2">&quot;18.15f&quot;</span><span class="p">,</span>
+    <span class="n">GQ_10</span><span class="o">=</span><span class="s2">&quot;18.15f&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">geo</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">CadToCsg</span><span class="p">(</span>
+    <span class="n">options</span><span class="o">=</span><span class="n">my_options</span><span class="p">,</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">my_settings</span><span class="p">,</span>
+    <span class="n">tolerances</span><span class="o">=</span><span class="n">my_tolerances</span><span class="p">,</span>
+    <span class="n">numeric_format</span><span class="o">=</span><span class="n">my_numeric_format</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">geo</span><span class="o">.</span><span class="n">load_step_file</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;cuboid.stp&quot;</span><span class="p">,</span>
+    <span class="n">skip_solids</span><span class="o">=</span><span class="p">[],</span>
+<span class="p">)</span>
+
+<span class="n">geo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">geo</span><span class="o">.</span><span class="n">export_csg</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Converted with GEOUNED&quot;</span><span class="p">,</span>
+    <span class="n">geometryName</span><span class="o">=</span><span class="s2">&quot;csg&quot;</span><span class="p">,</span>
+    <span class="n">outFormat</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;openmc_xml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;openmc_py&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;serpent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;phits&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mcnp&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">volSDEF</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">volCARD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">UCARD</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dummyMat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cellCommentFile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">cellSummaryFile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also load up JSON configuration files from the API.
+The JSON file format is also usable with the Geouned Command Line Interface  and there are more <a class="reference external" href="python_cli_usage.html">complete examples of JSON files</a> on that section of the documentation.
+For this example we assume you have a JSON file called ‘config.json’ in the same directory as the script.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geouned</span>
+
+<span class="n">geo</span> <span class="o">=</span> <span class="n">geouned</span><span class="o">.</span><span class="n">CadToCsg</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">)</span>
+<span class="n">geo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">geo</span><span class="o">.</span><span class="n">export_csg</span><span class="p">()</span>
+</pre></div>
 </div>
 </section>
 
@@ -459,20 +577,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../install/install_windows.html"
+       href="index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">2. </span>Windows</p>
+        <p class="prev-next-title">Usage</p>
       </div>
     </a>
     <a class="right-next"
-       href="python_cadtocsg_api_usage.html"
+       href="python_cadtocsg_cli_usage.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">1. </span>Python Package Usage, CAD to CSG conversion</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>Command Line Tool Usage, CAD to CSG conversion</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -489,7 +607,7 @@ document.write(`
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/usage/index.rst.txt">
+    <a href="../_sources/usage/python_cadtocsg_api_usage.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
