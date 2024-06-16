@@ -27,29 +27,38 @@ twoPi = math.pi * 2
 
 def split_full_cylinder(solid, options, tolerances, numeric_format):
     explode = []
+    # Initial solids to split
     bases = [solid]
+    # Recursive splitting of solids
     while True:
         new_bases = []
+        # Loop through each of the intial solids 
         for base in bases:
             cut_solids = cut_full_cylinder(base, options, tolerances, numeric_format)
+            # If no new solids are created, no splitting
             if len(cut_solids) == 1:
                 explode.extend(cut_solids)
+            # If splitting on cylinders occurs, add to new_bases
             else:
                 new_bases.extend(cut_solids)
+        # Split until no further splitting possible 
         if len(new_bases) == 0:
             break
         else:
             bases = new_bases
-
+    # Unique solid containing all the parts
     return Part.makeCompound(explode)
 
 
 def cut_full_cylinder(solid, options, tolerances, numeric_format):
+    # Get attributes of solid from FreeCAD
     solid_gu = GU.SolidGu(solid, tolerances=tolerances)
     surfaces = UF.SurfacesDict()
+    # Compare normals of 'face' and 'surface' in FreeCAD to check alignment (know where material is)
     flag_inv = CD.is_inverted(solid_gu.solid)
     universe_box = solid.BoundBox
 
+    # Loop through each face of the solids
     for face in solid_gu.Faces:
         surf = str(face.Surface)
         if surf == "<Cylinder object>":
@@ -58,38 +67,46 @@ def cut_full_cylinder(solid, options, tolerances, numeric_format):
             else:
                 orient = face.Orientation
 
+            # Extract parameters of the face
             u1, u2, v1, v2 = face.ParameterRange
             angle = abs(u2 - u1)
 
-            # closed convex cylinder
+            # Only perform split if closed convex cylinder
             if abs(angle % twoPi) < 1e-2 and orient == "Forward":
                 dir = face.Surface.Axis
                 orig = face.Surface.Center
                 rad = face.Surface.Radius
                 dim_l = face.ParameterRange[3] - face.ParameterRange[2]
+                # Create the cylinder object 
                 cylinder = UF.GeounedSurface(("Cylinder", (orig, dir, rad, dim_l)), universe_box)
                 cylinder.build_surface()
+                # Dictionary containing all the surfaces of the solid
                 surfaces.add_cylinder(cylinder, options, tolerances, numeric_format, False)
 
-                # add planes if cylinder axis is cut by a plane (plane quasi perpedicular to axis)
+                # Add planes if cylinder axis is cut by a plane (plane quasi perpedicular to axis)
                 for p in cyl_bound_planes(face, universe_box):
                     p.build_surface()
                     surfaces.add_plane(p, options, tolerances, numeric_format, False)
                 break
 
+    # Sort and reverse the planes based on their orientation and position
     planes = []
     for P in ("PX", "PY", "PZ", "P"):
         planes.extend(surfaces[P])
+    # Sort planes based on number parallel and distance from origin
     planes = sort_planes(planes, True)
 
+    # If there are no planes, return the original solid
     if len(planes) == 0:
         return [solid]
+
+    # Reverse the order of planes if the number of planes in the last group is less than options.nPlaneReverse
     if len(planes[-1]) < options.nPlaneReverse:
         planes.reverse()
 
     cut = False
     for pp in planes:
-        # cut with more external parallel planes
+        # Cut with more external parallel planes
         pp[0].build_surface()
         if len(pp) != 1:
             pp[-1].build_surface()
@@ -98,6 +115,7 @@ def cut_full_cylinder(solid, options, tolerances, numeric_format):
             tools = (pp[0].shape,)
 
         try:
+            # Separate FreeCAD split function from GEOUNED split function
             comsolid = UF.split_bop(solid, tools, options.splitTolerance, options)
         except:
             comsolid = solid
@@ -123,14 +141,20 @@ def cut_full_cylinder(solid, options, tolerances, numeric_format):
     return out_solid
 
 
+# Function to generate a plane given position, normal, and diagonal
 def gen_plane(pos, normal, diag):
+    # Create a plane using FreeCAD's makePlane function
     plane = Part.makePlane(diag, diag, pos, normal)
+    # Calculate a vector on the plane
     vec_on_plane = plane.Vertexes[3].Point.sub(plane.Vertexes[0].Point)
+    # Calculate a new position by subtracting the vector from the original position
     new_pos = plane.Vertexes[0].Point.sub(vec_on_plane)
+    # Create a plane centered at the new position
     plane_center = Part.makePlane(2.0 * diag, 2.0 * diag, new_pos, normal)
     return plane_center
 
 
+# Function to calculate the bounding planes of a cylinder face
 def cyl_bound_planes(face, boundBox):
     Edges = face.OuterWire.Edges
     planes = []
@@ -159,6 +183,7 @@ def cyl_bound_planes(face, boundBox):
     return planes
 
 
+# Function to calculate the bounding planes of a torus face
 def torus_bound_planes(face, boundBox, tolerances):
     params = face.ParameterRange
     planes = []
@@ -200,18 +225,23 @@ def torus_bound_planes(face, boundBox, tolerances):
 
 
 def plane_spline_curve(edge, tolerances):
-
+    # Calculate the normal vector of the edge at the start and middle points
     normal = edge.derivative1At(0).cross(edge.derivative1At(0.5))
     normal.normalize()
+    
+    # Check if the derivative is orthogonal to the curve normal vector at certain points
     curve_2d = True
     for p in (0.25, 0.75, 1):
         # check if derivative orthogonal to curve normal vector
         if abs(normal.dot(edge.derivative1At(p))) > tolerances.value:
             curve_2d = False
             break
-
+    
+    # Calculate the difference between the start and middle points
     r = edge.valueAt(0.25) - edge.valueAt(0.75)
+    
     if curve_2d:
+        # Return the parameters of the plane if the curve is 2D
         return (edge.valueAt(0), normal, r.Length, r.Length)
     else:
         return None
@@ -355,25 +385,27 @@ def same_faces(Faces, tolerances):
     lista = Connection[0]
     Connection.popitem(0)
 
-    if len(Connection) == 0:  # solo los elementos de la lista de la superficie 0
+    if len(Connection) == 0:  # only the elements from the list of surface 0
         return lista
 
-    if not lista:  # ninguna face está conecta conecta con la superficie 0
+    if not lista:  # no face is connected to surface 0
         return lista
 
     for elem in Connection:
-        if elem in lista:  # que la key esta en lista implica que sus dependencias estan
+        # Check if the key is in the list, which implies that its dependencies are also present
+        if elem in lista:
             lista.extend(Connection[elem])
         else:
             for elem2 in Connection[elem]:
-                if elem2 in lista:  # si una de sus dependencias esta en lista lo esta la clave
+                # Check if one of its dependencies is in the list, then the key is also in the list
+                if elem2 in lista:
                     lista.append(elem)
 
     return list(set(lista))
 
 
 # Tolerance in this function are not the general once
-# function should be reviewed
+# TODO function should be reviewed
 def gen_plane_cylinder(face, solid, tolerances):
     Surf = face.Surface
     rad = Surf.Radius
@@ -402,12 +434,12 @@ def gen_plane_cylinder(face, solid, tolerances):
             ):
                 face_index_0.append(i)
 
-    # prueba same_faces, parece ok
+    # test same_faces, seems to be okay
     Faces_p = []
     for ind in face_index_0:
         Faces_p.append(solid.Faces[ind])
 
-    face_index = [face_index_0[0]]  # la face de entrada
+    face_index = [face_index_0[0]]  # the input face
 
     for k in same_faces(Faces_p, tolerances):
         face_index.append(face_index_0[k])
@@ -497,7 +529,7 @@ def gen_plane_cylinder(face, solid, tolerances):
 
 
 # Tolerance in this function are not the general once
-# function should be reviewed
+# TODO function should be reviewed
 def gen_plane_cone(face, solid, tolerances):
 
     if face.Area < 1e-2:
@@ -663,26 +695,34 @@ def plane_2nd_order(solid_GU, face, flag_inv, tolerances, convex=True):
 
 
 def split_planes(Solids, universe_box, options, tolerances, numeric_format):
+    # Create a copy of the Solids list called Bases.
     Bases = Solids[:]
     simpleSolid = []
 
-    # Cut with real planes defining solid faces
+    # Cut with real planes defining solid faces - continue until basic solid reached
     while True:
         newBases = []
         for base in Bases:
+            # Use split_p_planes_new to cut the base solids using planes.
             cut_solids = split_p_planes_new(base, universe_box, options, tolerances, numeric_format)
+            # The cut_solids are added to the simpleSolid list if no further splitting possible. 
             if len(cut_solids) == 1:
                 simpleSolid.extend(cut_solids)
+            # If the length of cut_solids is greater than 1, it means the base Solid was split into multiple components.
+            # The cut_solids are added to the newBases list for further processing.
             else:
                 newBases.extend(cut_solids)
+        # If there are no newBases to process, the while loop is exited.
         if len(newBases) == 0:
             break
         else:
             Bases = newBases
 
+    # The function returns the simpleSolid list, which contains the simplified components of the original Solids, and 0.
     return simpleSolid, 0
 
 
+# Class to represent parallel planes
 class ParallelPlanes:
     def __init__(self, plane):
         self.Axis = plane.Surf.Axis
@@ -690,6 +730,7 @@ class ParallelPlanes:
         self.count = 1
 
     def append(self, plane):
+        # Check if the given plane is parallel to the existing planes
         if is_parallel(plane.Surf.Axis, self.Axis, 0.1):
             self.elements.append(plane)
             self.count += 1
@@ -699,12 +740,14 @@ class ParallelPlanes:
 
     def sort(self):
         pos = []
+        # Calculate the distance of each plane from the axis
         for i, p in enumerate(self.elements):
             d = self.Axis.dot(p.Surf.Position)
             pos.append((d, i))
         pos.sort()
 
         sort = []
+        # Sort the planes based on their distance from the axis
         for p in pos:
             sort.append(self.elements[p[1]])
         self.elements = sort
@@ -712,51 +755,73 @@ class ParallelPlanes:
 
 def sort_planes(PlaneList, sortElements=False):
     if not PlaneList:
-        return []
+        return []  # Return an empty list if PlaneList is empty
+
+    # Check if planes are parallel
+    # Create a new list with the first plane as a ParallelPlanes object
     newList = [ParallelPlanes(PlaneList[0])]
+    newList = [ParallelPlanes(PlaneList[0])]
+    print(PlaneList)
+    newList = [ParallelPlanes(PlaneList[0])]  
+    print(PlaneList)
     for p in PlaneList[1:]:
         found = False
         for pp in newList:
-            if pp.append(p):
+            # Check if the given plane is parallel to the existing planes
+            if pp.append(p):  
                 found = True
                 break
+        # If the plane is not parallel, add it as a new ParallelPlanes object
         if not found:
-            newList.append(ParallelPlanes(p))
+            newList.append(ParallelPlanes(p))  
 
     lenList = []
     for i, pp in enumerate(newList):
         if sortElements:
-            pp.sort()
+            pp.sort()  # Sort the planes based on their distance from the axis if sortElements is True
         lenList.append((pp.count, i))
-    lenList.sort()
+    lenList.sort()  # Sort the planes based on the count of parallel planes
 
     sortedPlanes = []
+    # Append the sorted planes to the sortedPlanes list
     for l in lenList:
         sortedPlanes.append(newList[l[1]].elements)
 
-    return sortedPlanes
+    # Returns the list of sorted planes
+    return sortedPlanes  
 
 
 def split_p_planes_new(solid, universe_box, options, tolerances, numeric_format):
+    # Extract surfaces of the solid
     SPlanes = extract_surfaces(solid, "Planes", universe_box, options, tolerances, numeric_format, False)
-
     Planes = []
+
+    # Extend the Planes list with based on keys PX PY PZ and P.
     for P in ("PX", "PY", "PZ", "P"):
         Planes.extend(SPlanes[P])
 
+    # Sort the planes
     Planes = sort_planes(Planes)
 
+    # Return original solid if planes list empty as there are no planes to split it with
     if len(Planes) == 0:
         return [solid]
+    # If Planes last element less length than options.nPlaneReverse then the order of elements in list is reversed
     if len(Planes[-1]) < options.nPlaneReverse:
         Planes.reverse()
+    # Initialise out_solid list with original solid object
     out_solid = [solid]
+    # Iterate over each plane in each group of planes
     for pp in Planes:
         for p in pp:
+            # Prepare plane for splitting operation
             p.build_surface()
+        # Create tuple of shapes from current group of planes
         tools = tuple(p.shape for p in pp)
+        # Split the solid using the planes
         comsolid = UF.split_bop(solid, tools, options.splitTolerance, options)
 
+        # If splitting perfromed, exit and return the out_solid
         if len(comsolid.Solids) > 1:
             out_solid = comsolid.Solids
             break
@@ -871,33 +936,43 @@ def remove_solids(Solids):
 
 
 def split_component(solidShape, universe_box, options, tolerances, numeric_format):
+    # Capture which phase of the decomposition failed
     err = 0
     err2 = 0
 
+    # Extract the solid volumes
     Volini = solidShape.Volume
     Solids = solidShape.Solids
-    # Split with explicit planes bounding the solid and
-    # implicit planes interface of two 2nd order surfaces
-    split0, err = split_planes(Solids, universe_box, options, tolerances, numeric_format)
-    # Split with explicit 2nd order surfaces bounding the solid
 
+    # Split with explicit planes bounding the solid and
+    # implicit planes interface of two 2nd order surfaces by a plane
+    split0, err = split_planes(Solids, universe_box, options, tolerances, numeric_format)
+    
+    # Split with explicit 2nd order surfaces bounding the solid
     split1, err1 = split_2nd_order(split0, universe_box, options, tolerances, numeric_format)
     err += err1
 
+    # Split with additional planes for handling non-convex regions
     split, err2 = split_2nd_order_planes(split1, options, tolerances)
     err += err2
+
+    # Iterate over each part in the split
     Pieces = []
     for part in split:
+        # Check if the volume of the part is very small
         if part.Volume <= 1e-10:
             logger.warning(
                 f"split_component degenerated solids are produced {part.Volume}",
             )
             err += 2
             continue
+        # Append the part to the list of pieces
         Pieces.append(part)
 
+    # Create a compound object from the list of pieces
     comsolid = Part.makeCompound(Pieces)
 
+    # Checking to see if any part of the solid is lost
     Volend = comsolid.Volume
     Volch = (Volini - Volend) / Volini
 
@@ -911,12 +986,18 @@ def split_component(solidShape, universe_box, options, tolerances, numeric_forma
 # TODO rename this function as there are two with the name name
 def SplitSolid(solidShape, universe_box, options, tolerances, numeric_format):
 
+    # List for basic solids 
     solid_parts = []
 
+    # Loop over all the sub-solids/shapes within the CAD tree
     for solid in solidShape.Solids:
 
+        # Identify closed cylindrical surfaces and perform split on CAD solids
         explode = split_full_cylinder(solid, options, tolerances, numeric_format)
+        # Create basic solids 
         piece, err = split_component(explode, universe_box, options, tolerances, numeric_format)
+        # Add to list basic solids
         solid_parts.append(piece)
 
+    # Store all solid parts in one compound object 
     return Part.makeCompound(solid_parts), err
